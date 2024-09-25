@@ -1,46 +1,30 @@
 import QuestionTimer from "./QuestionTimer";
 import Answers from "./Answers";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import QUESTIONS from "../questions.js"
 
+
 export default function Question({
+    key,
     index,
     onSelectAnswer,  
-    onSkipAnswer
+    onSkipAnswer,
+    onNextQuestion,
+    onPrevQuestion
    }) {
+ 
+
      const [answer, setAnswer] = useState({
         selectedAnswer: '',
         isCorrect: null
       });
 
-      let timer = 10000;
-
-      if(answer.selectedAnswer){
-        timer = 5000;
-      }
-
-
-      if (answer.isCorrect !== null) {
-        timer = 1000;
-      }
-
-      function handleSelectAnswer(answer){
-         setAnswer({
-            selectedAnswer: answer,
-            isCorrect: null
-         })
-
-         setTimeout(() => {
-            setAnswer({
-                selectedAnswer: answer,
-                isCorrect: QUESTIONS[index].answers[0] === answer
-            })
-
-            setTimeout(() => {
-                onSelectAnswer(answer);
-            }, 5000);
-         }, 1000);
-      }
+    useEffect(() => {
+      setAnswer({
+        selectedAnswer: "",
+        isCorrect: null,
+      });
+    }, [index]);
 
     let answerState = '';
 
@@ -50,23 +34,40 @@ export default function Question({
         answerState = 'answered' ;
     }
 
+    const handleSelectAnswer = (selected) => {
+      setAnswer({
+        selectedAnswer: selected,
+        isCorrect: null, 
+      });
+      onSelectAnswer(selected); 
+    };
+
 
     return (
     <div id="question">
-        <QuestionTimer 
-        key={timer}
-        timeout={timer} 
-        onTimeout={answer.selectedAnswer === '' ? onSkipAnswer : null} 
-        mode={answerState}
-        />
         <h2>{QUESTIONS[index].text}</h2>
        <Answers 
-       
        answers={QUESTIONS[index].answers} 
        selectedAnswer={answer.selectedAnswer}
        answerState={answerState}
        onSelect={handleSelectAnswer}
        />
+    
+     
+       
+       <button style={{ marginRight: '10px' }} className='bton' onClick={onPrevQuestion}>
+         Prev
+       </button>
+       <button style={{ marginRight: '10px' }} className='bton' onClick={onSkipAnswer}>
+         Skip
+       </button>
+       <button 
+          style={{ marginRight: '10px' , marginTop: '10px'}} 
+          className='bton' 
+          onClick={onNextQuestion}
+          >
+         Next
+       </button>
     </div>
     );
 }

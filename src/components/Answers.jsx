@@ -1,16 +1,16 @@
-import { useRef } from "react";
-
+import { useEffect, useState } from "react";
 export default function Answers({answers, selectedAnswer, answerState, onSelect}) {
-    const shuffledAnswers = useRef();
-    
-    if(!shuffledAnswers.current){
-        shuffledAnswers.current = [...answers];
-        shuffledAnswers.current.sort(() => Math.random() - 0.5);
-    }
-    
+
+    const [shuffledAnswers, setShuffledAnswers] = useState([]);
+
+    useEffect(() => {
+        const shuffled = [...answers].sort(() => Math.random() - 0.5);
+        setShuffledAnswers(shuffled);
+      }, [answers]);
+
     return(
         <ul id="answers">
-        {shuffledAnswers.current.map((answer) => {
+        {shuffledAnswers.map((answer) => {
             const isSelected = selectedAnswer === answer;
             let cssClass = '';
 
@@ -23,7 +23,7 @@ export default function Answers({answers, selectedAnswer, answerState, onSelect}
             }
 
     return ( 
-       <li key={answer} className="answer">
+       <li key={answer}  className="answer">
          <button 
             onClick={ () => onSelect(answer)}  
             className={cssClass} 
@@ -35,5 +35,5 @@ export default function Answers({answers, selectedAnswer, answerState, onSelect}
        );
      })}
     </ul>
-    )
+    );
 }
